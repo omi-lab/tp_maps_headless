@@ -57,11 +57,17 @@ Map::Map(bool enableDepthBuffer):
       EGL_GREEN_SIZE, 1,
       EGL_BLUE_SIZE, 1,
       EGL_DEPTH_SIZE, 24,
-      EGL_CONFORMANT, EGL_OPENGL_ES2_BIT,
+      EGL_CONFORMANT, EGL_OPENGL_BIT,
+      //EGL_CONFORMANT, EGL_OPENGL_ES2_BIT,
       EGL_NONE
     };
     EGLint numConfig;
     eglChooseConfig(d->display, attributeList, &config, 1, &numConfig);
+    if(!config)
+    {
+      tpWarning() << "Failed to initialize EGL config.";
+      return;
+    }
   }
 
 
@@ -70,10 +76,17 @@ Map::Map(bool enableDepthBuffer):
 
     const EGLint attributeList[] =
     {
-      EGL_CONTEXT_CLIENT_VERSION, 2,
+      EGL_CONTEXT_CLIENT_VERSION, 3,
       EGL_NONE
     };
     d->context = eglCreateContext(d->display, config, EGL_NO_CONTEXT, attributeList);
+    if(!d->context)
+    {
+      tpWarning() << "Failed to initialize EGL context.";
+      return;
+    }
+
+    setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_320_ES);
   }
 
 
