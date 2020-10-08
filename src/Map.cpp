@@ -73,7 +73,6 @@ Map::Map(bool enableDepthBuffer):
 
   //-- Context -------------------------------------------------------------------------------------
   {
-
     const EGLint attributeList[] =
     {
       EGL_CONTEXT_CLIENT_VERSION, 3,
@@ -85,8 +84,6 @@ Map::Map(bool enableDepthBuffer):
       tpWarning() << "Failed to initialize EGL context.";
       return;
     }
-
-    setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_320_ES);
   }
 
 
@@ -108,6 +105,22 @@ Map::Map(bool enableDepthBuffer):
 
   d->ready = true;
   makeCurrent();
+
+  //-- Use the OpenGL ES version that we were given ------------------------------------------------
+  {
+    // This could maybe go tp_maps::Map::initializeGL()
+    GLint major{0};
+    GLint minor{0};
+    glGetIntegerv(GL_MAJOR_VERSION, &major);
+    glGetIntegerv(GL_MINOR_VERSION, &minor);
+    switch(major*10+minor)
+    {
+    case 10: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_100_ES); break;
+    case 30: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_300_ES); break;
+    case 31: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_310_ES); break;
+    case 32: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_320_ES); break;
+    }
+  }
 
   initializeGL();
 }
