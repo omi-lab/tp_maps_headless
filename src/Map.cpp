@@ -6,7 +6,9 @@
 #include "tp_utils/TimeUtils.h"
 #include "tp_utils/DebugUtils.h"
 
+#ifdef TP_LINUX
 #include <EGL/egl.h>
+#endif
 
 namespace tp_maps_headless
 {
@@ -16,9 +18,11 @@ struct Map::Private
   Map* q;
 
   bool ready{false};
+#ifdef TP_LINUX
   EGLDisplay display{nullptr};
   EGLContext context{nullptr};
   EGLSurface surface{nullptr};
+#endif
 
   //################################################################################################
   Private(Map* q_):
@@ -33,6 +37,7 @@ Map::Map(bool enableDepthBuffer):
   tp_maps::Map(enableDepthBuffer),
   d(new Private(this))
 {
+#ifdef TP_LINUX
   //-- Display -------------------------------------------------------------------------------------
   d->display = eglGetDisplay(nullptr);
   if(!d->display)
@@ -123,6 +128,7 @@ Map::Map(bool enableDepthBuffer):
   }
 
   initializeGL();
+#endif
 }
 
 //##################################################################################################
@@ -138,8 +144,10 @@ void Map::makeCurrent()
   if(!d->ready)
     return;
 
+#ifdef TP_LINUX
   if(eglMakeCurrent(d->display, d->surface, d->surface, d->context) != EGL_TRUE)
     tpWarning() << "Failed to make current.";
+#endif
 }
 
 //##################################################################################################
