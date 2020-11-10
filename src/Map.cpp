@@ -7,7 +7,10 @@
 #include "tp_utils/DebugUtils.h"
 
 #ifdef TP_LINUX
+//#define EGL_EGLEXT_PROTOTYPES
+
 #include <EGL/egl.h>
+#include <EGL/eglext.h>
 #endif
 
 namespace tp_maps_headless
@@ -38,6 +41,21 @@ Map::Map(bool enableDepthBuffer):
   d(new Private(this))
 {
 #ifdef TP_LINUX
+
+  tpDebug() << "Query EGL devices.";
+
+  PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT = (PFNEGLQUERYDEVICESEXTPROC)eglGetProcAddress("eglQueryDevicesEXT");
+  PFNEGLQUERYDEVICESTRINGEXTPROC eglQueryDeviceStringEXT = (PFNEGLQUERYDEVICESTRINGEXTPROC)eglGetProcAddress("eglQueryDeviceStringEXT");
+
+  EGLDeviceEXT devices[10];
+  EGLint num_devices{0};
+  eglQueryDevicesEXT(10, devices, &num_devices);
+
+  for(EGLint n=0; n<num_devices; n++)
+  {
+    tpDebug() << "Found device: " << n << " name: " << eglQueryDeviceStringEXT(devices[n], EGL_EXTENSIONS);
+  }
+
   //-- Display -------------------------------------------------------------------------------------
   d->display = eglGetDisplay(nullptr);
   if(!d->display)
