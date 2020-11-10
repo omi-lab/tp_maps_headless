@@ -42,32 +42,53 @@ Map::Map(bool enableDepthBuffer):
 {
 #ifdef TP_LINUX
 
-  tpDebug() << "Query EGL devices.";
+  tpWarning() << "Query available EGL devices.";
 
   PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT = (PFNEGLQUERYDEVICESEXTPROC)eglGetProcAddress("eglQueryDevicesEXT");
   PFNEGLQUERYDEVICESTRINGEXTPROC eglQueryDeviceStringEXT = (PFNEGLQUERYDEVICESTRINGEXTPROC)eglGetProcAddress("eglQueryDeviceStringEXT");
+  PFNEGLQUERYDISPLAYATTRIBEXTPROC eglQueryDisplayAttribEXT = (PFNEGLQUERYDISPLAYATTRIBEXTPROC)eglGetProcAddress("eglQueryDisplayAttribEXT");
+  PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT = (PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress("eglGetPlatformDisplayEXT");
 
   EGLDeviceEXT devices[10];
   EGLint num_devices{0};
   eglQueryDevicesEXT(10, devices, &num_devices);
+  if(num_devices<1)
+  {
+    tpWarning() << "Failed to find any EGL devices.";
+    return;
+  }
 
   for(EGLint n=0; n<num_devices; n++)
   {
-    tpDebug() << "Found device: " << n << " name: " << eglQueryDeviceStringEXT(devices[n], EGL_EXTENSIONS);
+    tpWarning() << "Found device: " << n << " name: " << eglQueryDeviceStringEXT(devices[n], EGL_EXTENSIONS);
   }
 
   //-- Display -------------------------------------------------------------------------------------
-  d->display = eglGetDisplay(nullptr);
+  //d->display = eglGetDisplay(nullptr);
+  d->display = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, devices[0], nullptr);
   if(!d->display)
   {
     tpWarning() << "Failed to create EGL display.";
     return;
   }
 
-  if(eglInitialize(d->display, nullptr, nullptr) != EGL_TRUE)
+  EGLint major, minor;
+  if(eglInitialize(d->display, &major, &minor) != EGL_TRUE)
   {
     tpWarning() << "Failed to initialize EGL display.";
     return;
+  }
+  tpWarning() << "EGL version: " << major << '.' << minor;
+
+  EGLDeviceEXT device;
+  if(eglQueryDisplayAttribEXT(d->display, EGL_DEVICE_EXT, (EGLAttrib*)&device) != EGL_TRUE)
+  {
+    tpWarning() << "Failed to query device!";
+    return;
+  }
+  else
+  {
+    tpWarning() << "Using device: " << eglQueryDeviceStringEXT(device, EGL_EXTENSIONS);
   }
 
 
@@ -76,12 +97,13 @@ Map::Map(bool enableDepthBuffer):
   {
     const EGLint attributeList[] =
     {
+      EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
       EGL_RED_SIZE, 1,
       EGL_GREEN_SIZE, 1,
       EGL_BLUE_SIZE, 1,
       EGL_DEPTH_SIZE, 24,
       EGL_CONFORMANT, EGL_OPENGL_BIT,
-      //EGL_CONFORMANT, EGL_OPENGL_ES2_BIT,
+      //EGL_CONFORMANT, EGL_OPENGL_ES3_BIT,
       EGL_NONE
     };
     EGLint numConfig;
