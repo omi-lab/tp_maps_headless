@@ -44,10 +44,10 @@ Map::Map(bool enableDepthBuffer):
 
   tpWarning() << "Query available EGL devices.";
 
-  PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT = (PFNEGLQUERYDEVICESEXTPROC)eglGetProcAddress("eglQueryDevicesEXT");
-  PFNEGLQUERYDEVICESTRINGEXTPROC eglQueryDeviceStringEXT = (PFNEGLQUERYDEVICESTRINGEXTPROC)eglGetProcAddress("eglQueryDeviceStringEXT");
-  PFNEGLQUERYDISPLAYATTRIBEXTPROC eglQueryDisplayAttribEXT = (PFNEGLQUERYDISPLAYATTRIBEXTPROC)eglGetProcAddress("eglQueryDisplayAttribEXT");
-  PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT = (PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress("eglGetPlatformDisplayEXT");
+  PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT = reinterpret_cast<PFNEGLQUERYDEVICESEXTPROC>(eglGetProcAddress("eglQueryDevicesEXT"));
+  PFNEGLQUERYDEVICESTRINGEXTPROC eglQueryDeviceStringEXT = reinterpret_cast<PFNEGLQUERYDEVICESTRINGEXTPROC>(eglGetProcAddress("eglQueryDeviceStringEXT"));
+  PFNEGLQUERYDISPLAYATTRIBEXTPROC eglQueryDisplayAttribEXT = reinterpret_cast<PFNEGLQUERYDISPLAYATTRIBEXTPROC>(eglGetProcAddress("eglQueryDisplayAttribEXT"));
+  PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT = reinterpret_cast<PFNEGLGETPLATFORMDISPLAYEXTPROC>(eglGetProcAddress("eglGetPlatformDisplayEXT"));
 
   EGLDeviceEXT devices[10];
   EGLint num_devices{0};
@@ -81,7 +81,7 @@ Map::Map(bool enableDepthBuffer):
   tpWarning() << "EGL version: " << major << '.' << minor;
 
   EGLDeviceEXT device;
-  if(eglQueryDisplayAttribEXT(d->display, EGL_DEVICE_EXT, (EGLAttrib*)&device) != EGL_TRUE)
+  if(eglQueryDisplayAttribEXT(d->display, EGL_DEVICE_EXT, reinterpret_cast<EGLAttrib*>(&device)) != EGL_TRUE)
   {
     tpWarning() << "Failed to query device!";
     return;
