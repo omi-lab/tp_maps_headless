@@ -7,11 +7,10 @@
 #include "tp_utils/DebugUtils.h"
 
 #ifdef TP_LINUX
-//#define EGL_EGLEXT_PROTOTYPES
-
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #endif
+
 
 namespace tp_maps_headless
 {
@@ -104,6 +103,7 @@ Map::Map(bool enableDepthBuffer):
       EGL_DEPTH_SIZE, 24,
       EGL_CONFORMANT, EGL_OPENGL_BIT,
       //EGL_CONFORMANT, EGL_OPENGL_ES3_BIT,
+
       EGL_NONE
     };
     EGLint numConfig;
@@ -121,6 +121,11 @@ Map::Map(bool enableDepthBuffer):
     const EGLint attributeList[] =
     {
       EGL_CONTEXT_CLIENT_VERSION, 3,
+
+  #ifdef TP_MAPS_DEBUG
+      EGL_CONTEXT_OPENGL_DEBUG, EGL_TRUE,
+  #endif
+
       EGL_NONE
     };
     d->context = eglCreateContext(d->display, config, EGL_NO_CONTEXT, attributeList);
