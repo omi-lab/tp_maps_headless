@@ -1,5 +1,4 @@
 DEPENDENCIES += tp_maps
 INCLUDEPATHS += tp_maps_headless/inc/
 LIBRARIES    += tp_maps_headless
-
-LIBS += -lOpenGL -lEGL
+TP_DEPENDENCIES += tp_maps_headless/dependencies

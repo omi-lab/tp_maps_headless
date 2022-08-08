@@ -11,6 +11,28 @@
 #include <EGL/eglext.h>
 #endif
 
+#ifdef TP_WIN32
+// You may need to build the MESA SDK on Windows.
+// You can download it here:
+//   - https://archive.mesa3d.org/
+//
+// Build instructions are here:
+//   - https://docs.mesa3d.org/install.html
+//   - https://docs.mesa3d.org/egl.html#build-egl
+//
+// Prerequisites:
+// choco install meson
+// choco install winflexbison
+// /c/Python310/python3.exe -m pip install mako
+//
+// Build commands:
+// meson ../build/ -D egl=enabled -D gles1=enabled -D gles2=enabled -D shared-glapi=enabled -Dprefix="C:\\Users\\PC\\projects\\external\\mesa\\install\\"
+// ninja -C ../build/ install
+
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#endif
+
 
 namespace tp_maps_headless
 {
@@ -20,7 +42,7 @@ struct Map::Private
   Map* q;
 
   bool ready{false};
-#ifdef TP_LINUX
+#if defined(TP_LINUX) || defined(TP_WIN32)
   EGLDisplay display{nullptr};
   EGLContext context{nullptr};
   EGLSurface surface{nullptr};
@@ -39,7 +61,7 @@ Map::Map(bool enableDepthBuffer):
   tp_maps::Map(enableDepthBuffer),
   d(new Private(this))
 {
-#ifdef TP_LINUX
+#if defined(TP_LINUX) || defined(TP_WIN32)
 
   tpWarning() << "Query available EGL devices.";
 
@@ -58,27 +80,48 @@ Map::Map(bool enableDepthBuffer):
   }
 
   for(EGLint n=0; n<num_devices; n++)
-  {
     tpWarning() << "Found device: " << n << " name: " << eglQueryDeviceStringEXT(devices[n], EGL_EXTENSIONS);
-  }
 
+  tpDebug() << "Map::Map a";
   //-- Display -------------------------------------------------------------------------------------
   //d->display = eglGetDisplay(nullptr);
+
+#ifdef TP_LINUX
   d->display = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, devices[0], nullptr);
+#elif defined(TP_WIN32)
+  d->display = eglGetPlatformDisplayEXT(EGL_PLATFORM_SURFACELESS_MESA, devices[0], nullptr);
+#endif
+
   if(!d->display)
   {
     tpWarning() << "Failed to create EGL display.";
     return;
   }
+  // //           0x31DD
 
+//  switch (disp->Platform) {
+//  case _EGL_PLATFORM_SURFACELESS:
+//     ret = wgl_initialize_impl(disp, NULL);
+//     break;
+//  case _EGL_PLATFORM_WINDOWS:
+//     ret = wgl_initialize_impl(disp, disp->PlatformDisplay);
+//     break;
+//  default:
+//     unreachable("Callers ensure we cannot get here.");
+//     return EGL_FALSE;
+
+
+  tpDebug() << "Map::Map b";
   EGLint major, minor;
   if(eglInitialize(d->display, &major, &minor) != EGL_TRUE)
   {
+    tpDebug() << "Map::Map b1";
     tpWarning() << "Failed to initialize EGL display.";
     return;
   }
   tpWarning() << "EGL version: " << major << '.' << minor;
 
+  tpDebug() << "Map::Map c";
   EGLDeviceEXT device;
   if(eglQueryDisplayAttribEXT(d->display, EGL_DEVICE_EXT, reinterpret_cast<EGLAttrib*>(&device)) != EGL_TRUE)
   {
@@ -90,6 +133,7 @@ Map::Map(bool enableDepthBuffer):
     tpWarning() << "Using device: " << eglQueryDeviceStringEXT(device, EGL_EXTENSIONS);
   }
 
+  tpDebug() << "Map::Map d";
 
   //-- Config --------------------------------------------------------------------------------------
   EGLConfig config;
@@ -159,6 +203,9 @@ Map::Map(bool enableDepthBuffer):
   //-- Use the OpenGL ES version that we were given ------------------------------------------------
   {
     // This could maybe go tp_maps::Map::initializeGL()
+#ifdef TP_GLES2
+    setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_100_ES);
+#else
     GLint major{0};
     GLint minor{0};
     glGetIntegerv(GL_MAJOR_VERSION, &major);
@@ -170,6 +217,7 @@ Map::Map(bool enableDepthBuffer):
     case 31: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_310_ES); break;
     case 32: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_320_ES); break;
     }
+#endif
   }
 
   initializeGL();
@@ -189,7 +237,7 @@ void Map::makeCurrent()
   if(!d->ready)
     return;
 
-#ifdef TP_LINUX
+#if defined(TP_LINUX) || defined(TP_WIN32)
   if(eglMakeCurrent(d->display, d->surface, d->surface, d->context) != EGL_TRUE)
     tpWarning() << "Failed to make current.";
 #endif
