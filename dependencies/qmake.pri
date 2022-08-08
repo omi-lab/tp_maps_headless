@@ -13,8 +13,12 @@ else:android {
 }
 
 else:win32 {
-  LIBS += libEGL.dll.a
-  LIBS += libGLESv2.dll.a
+  LIBS += glfw3.lib
+  LIBS += gdi32.lib
+  LIBS += opengl32.lib
+  LIBS += kernel32.lib
+  LIBS += user32.lib
+  LIBS += shell32.lib
 }
 
 else {
