@@ -36,6 +36,8 @@ struct Map::Private
   GLFWwindow* window{nullptr};
 #endif
 
+  std::vector<std::function<void()>> callAsyncRequests;
+
   //################################################################################################
   Private(Map* q_):
     q(q_)
@@ -160,7 +162,7 @@ Map::Map(bool enableDepthBuffer):
   }
 
   d->ready = true;
-  makeCurrent();
+  Map::makeCurrent();
 
   //-- Use the OpenGL ES version that we were given ------------------------------------------------
   {
@@ -193,7 +195,7 @@ Map::Map(bool enableDepthBuffer):
   d->window = glfwCreateWindow(640, 480, "", nullptr, nullptr);
 
   d->ready = true;
-  makeCurrent();
+  Map::makeCurrent();
 
   initializeGL();
 #endif
@@ -220,6 +222,19 @@ void Map::makeCurrent()
 #ifdef TP_WIN32
   glfwMakeContextCurrent(d->window);
 #endif
+}
+
+//##################################################################################################
+void Map::callAsync(const std::function<void()>& callback)
+{
+  d->callAsyncRequests.push_back(callback);
+}
+
+//##################################################################################################
+void Map::poll()
+{
+  while(!d->callAsyncRequests.empty())
+    tpTakeFirst(d->callAsyncRequests)();
 }
 
 }
