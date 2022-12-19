@@ -72,6 +72,15 @@ Map::Map(bool enableDepthBuffer):
     tpWarning() << "Found device: " << n << " name: " << eglQueryDeviceStringEXT(devices[n], EGL_EXTENSIONS);
 
   //-- Display -------------------------------------------------------------------------------------
+//  EGLint attributes[] =
+//  {
+//    EGL_VERSION, EGL_VERSION_1_5,
+//    //EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+//    //EGL_CONTEXT_MAJOR_VERSION, 3,
+//    //EGL_CONTEXT_MINOR_VERSION, 0,
+//    EGL_NONE
+//  };
+
   d->display = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, devices[0], nullptr);
 
   if(!d->display)
