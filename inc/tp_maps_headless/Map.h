@@ -9,7 +9,7 @@ namespace tp_maps_headless
 {
 
 //##################################################################################################
-class TP_MAPS_HEADLESS_SHARED_EXPORT Map : public tp_maps::Map
+class TP_MAPS_HEADLESS_EXPORT Map : public tp_maps::Map
 {
 public:
   //################################################################################################

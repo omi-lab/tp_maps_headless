@@ -2,9 +2,9 @@
 #define tp_maps_headless_Globals_h
 
 #if defined(TP_MAPS_HEADLESS_LIBRARY)
-#  define TP_MAPS_HEADLESS_SHARED_EXPORT
+#  define TP_MAPS_HEADLESS_EXPORT
 #else
-#  define TP_MAPS_HEADLESS_SHARED_EXPORT
+#  define TP_MAPS_HEADLESS_EXPORT
 #endif
 
 //##################################################################################################
