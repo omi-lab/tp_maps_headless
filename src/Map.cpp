@@ -1,9 +1,5 @@
 #include "tp_maps_headless/Map.h"
 
-#include "tp_maps/MouseEvent.h"
-#include "tp_maps/KeyEvent.h"
-
-#include "tp_utils/TimeUtils.h"
 #include "tp_utils/DebugUtils.h"
 
 #ifdef TP_LINUX
