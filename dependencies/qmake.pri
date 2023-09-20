@@ -1,7 +1,8 @@
 DEFINES += TP_FILESYSTEM
 
 macx {
-  LIBS += -lOpenGL -lEGL
+# Fails to link on macOS Ventura but seems to work without this.
+# LIBS += -lOpenGL -lEGL
 }
 
 else:iphoneos {
