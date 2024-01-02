@@ -178,10 +178,10 @@ Map::Map(bool enableDepthBuffer):
     glGetIntegerv(GL_MINOR_VERSION, &minor);
     switch(major*10+minor)
     {
-    case 10: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_100_ES); break;
-    case 30: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_300_ES); break;
-    case 31: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_310_ES); break;
-    case 32: setOpenGLProfile(tp_maps::OpenGLProfile::VERSION_320_ES); break;
+    case 10: setShaderProfile(tp_maps::ShaderProfile::GLSL_100_ES); break;
+    case 30: setShaderProfile(tp_maps::ShaderProfile::GLSL_300_ES); break;
+    case 31: setShaderProfile(tp_maps::ShaderProfile::GLSL_310_ES); break;
+    case 32: setShaderProfile(tp_maps::ShaderProfile::GLSL_320_ES); break;
     }
   }
 
