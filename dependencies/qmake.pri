@@ -23,5 +23,7 @@ else:win32 {
 }
 
 else {
-  LIBS += -lOpenGL -lEGL
+  # OpenGL fails on linux
+  #LIBS += -lOpenGL -lEGL
+  LIBS += -lGL -lEGL
 }
