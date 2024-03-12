@@ -1,6 +1,9 @@
 DEFINES += TP_FILESYSTEM
 
-macx {
+custom_opengl {
+}
+
+else:macx {
 # Fails to link on macOS Ventura but seems to work without this.
 # LIBS += -lOpenGL -lEGL
 }
@@ -23,7 +26,5 @@ else:win32 {
 }
 
 else {
-  # OpenGL fails on linux
-  #LIBS += -lOpenGL -lEGL
-  LIBS += -lGL -lEGL
+  LIBS += -lOpenGL -lEGL
 }
