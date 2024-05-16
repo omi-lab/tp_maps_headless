@@ -11,6 +11,7 @@ namespace tp_maps_headless
 //##################################################################################################
 class TP_MAPS_HEADLESS_EXPORT Map : public tp_maps::Map
 {
+  TP_DQ;
 public:
   //################################################################################################
   Map(bool enableDepthBuffer = true);
@@ -26,11 +27,6 @@ public:
 
   //################################################################################################
   void poll();
-
-private:
-  struct Private;
-  Private* d;
-  friend struct Private;
 };
 }
 #endif
