@@ -1,5 +1,3 @@
-DEFINES += TP_FILESYSTEM
-
 custom_opengl {
 }
 
