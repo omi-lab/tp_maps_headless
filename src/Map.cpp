@@ -19,7 +19,7 @@ namespace tp_maps_headless
 //##################################################################################################
 struct Map::Private
 {
-  Map* q;
+  Q* q;
 
   bool ready{false};
 #ifdef TP_LINUX
@@ -35,7 +35,7 @@ struct Map::Private
   std::vector<std::function<void()>> callAsyncRequests;
 
   //################################################################################################
-  Private(Map* q_):
+  Private(Q* q_):
     q(q_)
   {
 
